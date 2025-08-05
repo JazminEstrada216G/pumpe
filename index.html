@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cumpleaños Liliana</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: black;
+      overflow: hidden;
+      font-family: 'Elephant Pro', sans-serif;
+    }
+
+    .matrix {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      color: #ff00ff; /* rosa fosforescente */
+      font-size: 20px;
+      writing-mode: vertical-rl;
+      opacity: 0.2;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .center-text {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #ff00ff;
+      font-family: 'Elephant Pro', sans-serif;
+      text-align: center;
+      z-index: 2;
+      white-space: pre-line;
+      animation: fadeIn 1s ease;
+    }
+
+    .dot-text {
+      font-size: 280px;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent 0,
+        transparent 3px,
+        #ff00ff 3px,
+        #ff00ff 4px
+      );
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      animation: fadeInOut 1s ease forwards;
+    }
+
+    .letter-fill {
+      font-size: 170px;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent 0,
+        transparent 3px,
+        #ff00ff 3px,
+        #ff00ff 4px
+      );
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .heart {
+      font-size: 170px;
+      color: #ff00ff;
+      animation: fadeInOut 1s ease forwards;
+    }
+
+    @keyframes fadeInOut {
+      0% { opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="matrixCanvas" class="matrix"></canvas>
+  <div id="textContainer" class="center-text"></div>
+  <script>
+    // Matrix Rain Background
+    const canvas = document.getElementById('matrixCanvas');
+    const ctx = canvas.getContext('2d');
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const letters = 'HAPPY BIRTHDAY'.split('');
+    const fontSize = 20;
+    const columns = canvas.width / fontSize;
+    const drops = Array(Math.floor(columns)).fill(1);
+
+    function drawMatrix() {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#ff00ff';
+      ctx.font = fontSize + 'px Elephant Pro';
+
+      for (let i = 0; i < drops.length; i++) {
+        const text = letters[Math.floor(Math.random() * letters.length)];
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+
+        drops[i]++;
+      }
+    }
+
+    setInterval(drawMatrix, 33);
+
+    // Confetti Library
+    function launchConfetti() {
+      const duration = 5 * 1000;
+      const end = Date.now() + duration;
+      (function frame() {
+        confetti({
+          particleCount: 2,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0 },
+          colors: ['#ff00ff']
+        });
+        confetti({
+          particleCount: 2,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1 },
+          colors: ['#ff00ff']
+        });
+
+        if (Date.now() < end) {
+          requestAnimationFrame(frame);
+        }
+      })();
+    }
+
+    // Load Confetti Script
+    const confettiScript = document.createElement('script');
+    confettiScript.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js';
+    confettiScript.onload = () => {
+      launchConfetti();
+    };
+    document.body.appendChild(confettiScript);
+
+    // Countdown & Sequence
+    const textContainer = document.getElementById('textContainer');
+    const sequence = [
+      { text: '3', class: 'dot-text', size: 280 },
+      { text: '2', class: 'dot-text', size: 280 },
+      { text: '1', class: 'dot-text', size: 280 },
+      { text: 'HAPPY\nBIRTHDAY', class: 'letter-fill', size: 170 },
+      { text: 'TO', class: 'letter-fill', size: 170 },
+      { text: 'YOU', class: 'letter-fill', size: 170 },
+      { text: '❤', class: 'heart', size: 170 },
+      { text: 'LILIANA', class: 'letter-fill', size: 150 }
+    ];
+
+    let i = 0;
+
+    function showNext() {
+      if (i >= sequence.length) return;
+
+      const item = sequence[i];
+      textContainer.innerHTML = `<div class="${item.class}" style="font-size:${item.size}px">${item.text}</div>`;
+      i++;
+      setTimeout(() => {
+        textContainer.innerHTML = '';
+        setTimeout(showNext, 200); // short pause between transitions
+      }, 3000);
+    }
+
+    setTimeout(showNext, 500); // start after a short delay
+  </script>
+</body>
+</html>
